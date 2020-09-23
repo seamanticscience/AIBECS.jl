@@ -34,7 +34,9 @@ surfacemap!(args...; kwargs...) = plothorizontalslice!(args...; kwargs..., depth
 Plots the vertical integral of tracer `x`.
 """
 plot∫dz(x, grd; mask=1, kwargs...) = horizontalplane(grd.lon, grd.lat, ∫dz(x, grd, mask); kwargs...)
+plot∫dz!(plt, x, grd; mask=1, kwargs...) = horizontalplane!(plt, grd.lon, grd.lat, ∫dz(x, grd, mask); kwargs...)
 plotverticalintegral = plot∫dz
+plotverticalintegral! = plot∫dz!
 """
     plotverticalaverage(x, grd, mask=1)
 
@@ -42,7 +44,7 @@ Plots the vertical average of tracer `x`.
 """
 plotverticalmean(x, grd; mask=1, kwargs...) = horizontalplane(grd.lon, grd.lat, verticalmean(x, grd, mask); kwargs...)
 plotverticalaverage = plotverticalmean
-export plotverticalaverage, plotverticalmean, plotverticalintegral, plot∫dz, surfacemap, surfacemap!, plothorizontalslice
+export plotverticalaverage, plotverticalmean, plotverticalintegral, plotverticalintegral!, plot∫dz, plot∫dz!, surfacemap, surfacemap!, plothorizontalslice
 
 """
     minimap(grd; central_longitude=200°)
@@ -174,21 +176,26 @@ end
 Plots a horizontal integral of tracer `x`.
 """
 plot∫dxdy(x, grd; mask=1, kwargs...) = zplot(∫dxdy(x, grd, mask), grd.depth; kwargs...)
+plot∫dxdy!(x, grd; mask=1, kwargs...) = zplot!(∫dxdy(x, grd, mask), grd.depth; kwargs...)
+plot∫dxdy!(plt, x, grd; mask=1, kwargs...) = zplot!(plt, ∫dxdy(x, grd, mask), grd.depth; kwargs...)
 plothorizontalintegral = plot∫dxdy
+plothorizontalintegral! = plot∫dxdy!
 """
-    horizontalaverage(x, grd; mask=1)
+    plothorizontalaverage(x, grd; mask=1)
 
 Plots a horizontal average of tracer `x`.
 """
 plothorizontalmean(x, grd; mask=1, kwargs...) = zplot(horizontalmean(x, grd, mask), grd.depth; kwargs...)
+plothorizontalmean!(plt, x, grd; mask=1, kwargs...) = zplot!(plt, horizontalmean(x, grd, mask), grd.depth; kwargs...)
 plothorizontalaverage = plothorizontalmean
+plothorizontalaverage! = plothorizontalmean!
 """
     plotdepthprofile(x, grd; lonlat)
 
 Plots the profile of tracer `x` interpolated at `lonlat=(x,y)` coordinates.
 """
 plotdepthprofile(x, grd; lonlat=nothing, kwargs...) = zplot(depthprofile(x, grd; lonlat=lonlat), grd.depth; kwargs...)
-export plot∫dxdy, plothorizontalintegral, plothorizontalmean, plothorizontalaverage, plotdepthprofile
+export plot∫dxdy, plot∫dxdy!, plothorizontalintegral, plothorizontalintegral!, plothorizontalmean, plothorizontalmean!, plothorizontalaverage, plothorizontalaverage!, plotdepthprofile
 
 #======================================================
 Vertical / (dist,z) plots (for transect/section slices)
@@ -212,10 +219,6 @@ Plots the transect of tracer `x` along transect `ct`.
 """
 plottransect(x, grd; ct=nothing, start=:south, show_stations=false, insetmap=false, kwargs...) = verticalplane(verticalsection(x, grd; ct=ct)...; kwargs...)
 export plottransect
-
-
-
-
 
 
 

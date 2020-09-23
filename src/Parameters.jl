@@ -113,7 +113,7 @@ Another example for optimizable/flattenable parameters
 
 ```jldoctest
 julia> @initial_value @units @flattenable struct OptParams{T} <: AbstractParameters{T}
-           α::T | 3.6 | u"km"  | true 
+           α::T | 3.6 | u"km"  | true
            β::T | 1.0 | u"hr"  | false
            γ::T | 1.0 | u"m/s" | true
        end ;
@@ -143,8 +143,8 @@ Here is an example of parameter with all the possible metadata available in AIBE
 
 ```jldoctest
 julia> @initial_value @units @prior @description @bounds @logscaled @flattenable @reference struct FullParams{T} <: AbstractParameters{T}
-           α::T | 1.0 | u"km"  | Normal(0,1)    | "The distance"   | (-Inf, Inf) | false | false | "Jean et al., 2042" 
-           β::T | 2.0 | u"hr"  | LogNormal(0,1) | "The time"       | (   0, Inf) | true  | true  | "Claude et al. 1983" 
+           α::T | 1.0 | u"km"  | Normal(0,1)    | "The distance"   | (-Inf, Inf) | false | false | "Jean et al., 2042"
+           β::T | 2.0 | u"hr"  | LogNormal(0,1) | "The time"       | (   0, Inf) | true  | true  | "Claude et al. 1983"
            γ::T | 3.0 | u"mol" | Normal(1,2)    | "The # of moles" | (  -1,   1) | false | true  | "Dusse et al. 2000"
        end ;
 
@@ -289,7 +289,7 @@ latex(p::AbstractParameters) = show(stdout, MIME("text/latex"), table(p))
 """
     unpack(p <: AbstractParameters, s)
 
-Unpacks the parameter `s` from `p`. 
+Unpacks the parameter `s` from `p`.
 
 Note this is specialized and will convert the parameter value to SI units.
 """
@@ -426,10 +426,10 @@ subfun(::LogNormal) = exp
 ∇²subfun(::LogNormal) = exp
 invsubfun(::LogNormal) = log
 # p = logistic(λ) for Uniform
-subfun(d::Uniform) = λ -> d.a + d.b / (exp(-λ) + 1)
-∇subfun(d::Uniform) = λ -> d.b * subfun(d)(λ) * subfun(d)(-λ)
-∇²subfun(d::Uniform) = λ -> d.b * subfun(d)(λ) * subfun(d)(-λ) * (subfun(d)(-λ) - subfun(d)(λ))
-invsubfun(d::Uniform) = p -> log((p - d.a) / (d.a + d.b - p))
+subfun(d::Uniform) = λ -> d.a + (d.b - d.a) / (exp(-λ) + 1)
+∇subfun(d::Uniform) = λ -> (d.b - d.a) * exp(-λ) / (exp(-λ) + 1)^2
+∇²subfun(d::Uniform) = λ -> (d.a - d.b) * exp(-λ) / (exp(-λ) + 1)^2 + 2(d.b - d.a) * exp(-2λ) / (exp(-λ) + 1)^3
+invsubfun(d::Uniform) = p -> -log((d.b - d.a) / (p - d.a) - 1)
 
 export subfun, ∇subfun, ∇²subfun, invsubfun
 
